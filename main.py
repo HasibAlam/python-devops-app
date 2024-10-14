@@ -1,9 +1,18 @@
-def add(x, y):
-    return x + y
+# app.py
+from flask import Flask, render_template, request
 
-if __name__ == "__main__":
-    print("2 + 3 = ", add(2, 3))
+app = Flask(__name__)
 
+# In-memory storage for names (guestbook entries)
+guestbook = []
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        if name:
+            guestbook.append(name)
+    return render_template('index.html', guestbook=guestbook)
 
-print("Team 8 complete deployment")
+if __name__ == '__main__':
+    app.run(debug=True)
