@@ -1,39 +1,44 @@
-name: Python CI/CD Pipeline
+name: Publish 🚀
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
+    - main
+
+env:
+  AZURE_WEBAPP_NAME: 'deployment'  # Your Azure Web App name
+  AZURE_WEBAPP_PACKAGE_PATH: "./"   # The root directory where your app is
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3  # Updated to v3 for the latest Node.js version
+      # Checkout the repository
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4  # Updated to v4 for the latest Python setup
-      with:
-        python-version: '3.9'
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flask
+      # Install dependencies (e.g., Flask)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flask  # You can add requirements.txt here
 
-    - name: Run unit tests
-      run: |
-        python -m unittest discover
+      # Run unit tests
+      - name: Run unit tests
+        run: |
+          python -m unittest discover
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'deployment'   # Update with your Azure App Service name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: '.'
+      # Deployment to Azure Web App
+      - name: Deployment
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}    # Use environment variable for the app name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Use the secret for the publish profile
+          package: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"   # Use the app root as the package
