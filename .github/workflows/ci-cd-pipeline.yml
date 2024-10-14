@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - main
+      - main
 
 env:
   AZURE_WEBAPP_NAME: 'deployment'  # Your Azure Web App name
@@ -28,15 +28,17 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flask  # You can add requirements.txt here
+          pip install flask
 
       # Run unit tests
       - name: Run unit tests
         run: |
           python -m unittest discover
 
+      # Optional: Build step if needed (Python typically doesn't need this)
+
       # Deployment to Azure Web App
-      - name: Deployment
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}    # Use environment variable for the app name
